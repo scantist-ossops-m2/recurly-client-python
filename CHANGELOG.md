@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.10.13](https://github.com/recurly/recurly-client-python/tree/2.10.13) (2024-04-04)
+
+[Full Changelog](https://github.com/recurly/recurly-client-python/compare/2.10.12...2.10.13)
+
+
+**Merged Pull Requests**
+
+- Add net_terms_type to Invoices, Purchases, and Subscriptions [#686](https://github.com/recurly/recurly-client-python/pull/686) ([btruncali1](https://github.com/btruncali1))
+
+
+
 ## [2.10.12](https://github.com/recurly/recurly-client-python/tree/2.10.12) (2024-03-19)
 
 [Full Changelog](https://github.com/recurly/recurly-client-python/compare/2.10.11...2.10.12)

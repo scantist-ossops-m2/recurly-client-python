@@ -11,10 +11,11 @@ from recurly import Account, AddOn, Address, Adjustment, BillingInfo, Coupon, It
     Purchase, Invoice, InvoiceCollection, CreditPayment, CustomField, ExportDate, ExportDateFile, DunningCampaign, \
     DunningCycle, GeneralLedgerAccount, InvoiceTemplate, PerformanceObligation, PlanRampInterval, SubRampInterval, ExternalSubscription, ExternalProduct, \
     ExternalProductReference, ExternalPaymentPhase, CustomFieldDefinition, ExternalInvoice, ExternalCharge, ExternalAccount, \
-    GatewayAttributes, BusinessEntity
+    GatewayAttributes, BusinessEntity, ProrationSettings
 from recurly import Money, NotFoundError, ValidationError, BadRequestError, PageError
 from recurly import recurly_logging as logging
-from recurlytests import RecurlyTest
+from recurlytests import RecurlyTest, xml
+from defusedxml import ElementTree
 
 recurly.SUBDOMAIN = 'api'
 
@@ -2188,6 +2189,43 @@ class TestResources(RecurlyTest):
             self.assertEqual(str(err), "blank: subscription.account.account_code can't be blank; invalid: subscription.account.account_code is invalid; empty: subscription.account.billing_info.address1 can't be empty; empty: subscription.account.billing_info.city can't be empty; empty: subscription.account.billing_info.country can't be empty; blank: subscription.account.billing_info.first_name can't be blank; blank: subscription.account.billing_info.last_name can't be blank; required: subscription.account.billing_info.number is required; empty: subscription.account.billing_info.zip can't be empty; invalid: subscription.plan_code is invalid; not_a_number: subscription.unit_amount_in_cents is not a number")
         except e:
             self.fail("Failed subscription did not raise a Validation error")
+
+    def test_subscription_change_proration(self):
+
+        plan = Plan(
+            plan_code='basicplan',
+            name='Basic Plan',
+            setup_fee_in_cents=Money(0),
+            unit_amount_in_cents=Money(1000),
+        )
+        with self.mock_request('subscription/plan-created.xml'):
+            plan.save()
+
+            account = Account(account_code='subscribe%s' % self.test_id)
+            with self.mock_request('subscription/account-created.xml'):
+                account.save()
+
+        manualsub = Subscription(
+                plan_code='basicplan',
+                currency='USD',
+                net_terms=10,
+                net_terms_type='net',
+                po_number='1000',
+                collection_method='manual'
+            )
+        with self.mock_request('subscription/subscribed-manual.xml'):
+            account.subscribe(manualsub)
+
+        manualsub.proration_settings = ProrationSettings(credit='none', charge='full_amount')
+        proration_xml = ElementTree.tostring(manualsub.proration_settings.to_element(), encoding='UTF-8')
+        self.assertEqual(
+            proration_xml,
+            xml('<proration_settings><charge>full_amount</charge><credit>none</credit></proration_settings>')
+        )
+
+        assert isinstance(manualsub.proration_settings, ProrationSettings)
+        ElementTree.tostring(account.to_element(), encoding='UTF-8')
+        
 
     def test_subscription_with_plan_ramp(self):
         plan_code = 'plan%s' % self.test_id

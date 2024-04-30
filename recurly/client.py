@@ -4834,6 +4834,80 @@ class Client(BaseClient):
         )
         return self._make_request("POST", path, body, **options)
 
+    def create_authorize_purchase(self, body, **options):
+        """Authorize a purchase
+
+        Parameters
+        ----------
+
+        body : dict
+            The request body. It should follow the schema of PurchaseCreate.
+
+        Keyword Arguments
+        -----------------
+
+        headers : dict
+            Extra HTTP headers to send with the request.
+
+        Returns
+        -------
+
+        InvoiceCollection
+            Returns the authorize invoice
+        """
+        path = self._interpolate_path(
+            "/purchases/authorize",
+        )
+        return self._make_request("POST", path, body, **options)
+
+    def create_capture_purchase(self, transaction_id, **options):
+        """Capture a purchase
+
+        Parameters
+        ----------
+
+        transaction_id : str
+            Transaction ID or UUID. For ID no prefix is used e.g. `e28zov4fw0v2`. For UUID use prefix `uuid-`, e.g. `uuid-123457890`.
+
+        Keyword Arguments
+        -----------------
+
+        headers : dict
+            Extra HTTP headers to send with the request.
+
+        Returns
+        -------
+
+        InvoiceCollection
+            Returns the captured invoice
+        """
+        path = self._interpolate_path("/purchases/%s/capture", transaction_id)
+        return self._make_request("POST", path, None, **options)
+
+    def cancelPurchase(self, transaction_id, **options):
+        """Cancel Purchase
+
+        Parameters
+        ----------
+
+        transaction_id : str
+            Transaction ID or UUID. For ID no prefix is used e.g. `e28zov4fw0v2`. For UUID use prefix `uuid-`, e.g. `uuid-123457890`.
+
+        Keyword Arguments
+        -----------------
+
+        headers : dict
+            Extra HTTP headers to send with the request.
+
+        Returns
+        -------
+
+        InvoiceCollection
+            Returns the cancelled invoice
+        """
+        path = self._interpolate_path("/purchases/%s/cancel/", transaction_id)
+        return self._make_request("POST", path, None, **options)
+
     def get_export_dates(self, **options):
         """List the dates that have an available export to download.
 

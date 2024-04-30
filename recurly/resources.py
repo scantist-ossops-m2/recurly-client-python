@@ -1479,8 +1479,6 @@ class Invoice(Resource):
         Optionally supplied string that may be either `net` or `eom` (end-of-month).
         When `net`, an invoice becomes past due the specified number of `Net Terms` days from the current date.
         When `eom` an invoice becomes past due the specified number of `Net Terms` days from the last day of the current month.
-
-        This field is only available when the EOM Net Terms feature is enabled.
     number : str
         If VAT taxation and the Country Invoice Sequencing feature are enabled, invoices will have country-specific invoice numbers for invoices billed to EU countries (ex: FR1001). Non-EU invoices will continue to use the site-level invoice number sequence.
     object : str
@@ -1987,8 +1985,6 @@ class Subscription(Resource):
         Optionally supplied string that may be either `net` or `eom` (end-of-month).
         When `net`, an invoice becomes past due the specified number of `Net Terms` days from the current date.
         When `eom` an invoice becomes past due the specified number of `Net Terms` days from the last day of the current month.
-
-        This field is only available when the EOM Net Terms feature is enabled.
     object : str
         Object type
     paused_at : datetime

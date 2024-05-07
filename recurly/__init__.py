@@ -1650,6 +1650,16 @@ class SubscriptionAddOn(Resource):
         'tier': Tier
     }
 
+class ProrationSettings(Resource):
+    """ProrationSettings"""
+
+    nodename = 'proration_settings'
+
+    attributes = (
+      'credit',
+      'charge',
+    )
+
 class Subscription(Resource):
 
     """A customer account's subscription to your service."""
@@ -1723,12 +1733,15 @@ class Subscription(Resource):
         'billing_info',
         'billing_info_uuid',
         'ramp_intervals',
-        'action_result'
+        'action_result',
+        'proration_settings',
+        'invoice_collection'
     )
 
     sensitive_attributes = ('number', 'verification_value', 'bulk')
     _classes_for_nodename = {
         'custom_field': CustomField,
+        'proration_settings': ProrationSettings,
         'invoice_collection': InvoiceCollection,
         'plan': Plan,
         'ramp_interval': SubRampInterval,

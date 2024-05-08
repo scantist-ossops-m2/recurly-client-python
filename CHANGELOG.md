@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.48.0](https://github.com/recurly/recurly-client-python/tree/4.48.0) (2024-05-08)
+
+[Full Changelog](https://github.com/recurly/recurly-client-python/compare/4.47.0...4.48.0)
+
+
+**Merged Pull Requests**
+
+- Generated Latest Changes for v2021-02-25 (Proration Settings) [#692](https://github.com/recurly/recurly-client-python/pull/692) ([recurly-integrations](https://github.com/recurly-integrations))
+
+
+
 ## [4.47.0](https://github.com/recurly/recurly-client-python/tree/4.47.0) (2024-05-01)
 
 [Full Changelog](https://github.com/recurly/recurly-client-python/compare/4.46.0...4.47.0)

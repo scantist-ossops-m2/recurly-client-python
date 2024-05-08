@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.10.14](https://github.com/recurly/recurly-client-python/tree/2.10.14) (2024-05-08)
+
+[Full Changelog](https://github.com/recurly/recurly-client-python/compare/2.10.13...2.10.14)
+
+
+**Merged Pull Requests**
+
+- Add support proration flexibility [#689](https://github.com/recurly/recurly-client-python/pull/689) ([Patrick-Duvall](https://github.com/Patrick-Duvall))
+
+
+
 ## [2.10.13](https://github.com/recurly/recurly-client-python/tree/2.10.13) (2024-04-04)
 
 [Full Changelog](https://github.com/recurly/recurly-client-python/compare/2.10.12...2.10.13)

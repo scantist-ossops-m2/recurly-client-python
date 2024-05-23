@@ -144,6 +144,8 @@ class Account(Resource):
         Unique ID to identify a dunning campaign. Used to specify if a non-default dunning campaign should be assigned to this account. For sites without multiple dunning campaigns enabled, the default dunning campaign will always be used.
     email : str
         The email address used for communicating with this customer. The customer will also use this email address to log into your hosted account management pages. This value does not need to be unique.
+    entity_use_code : str
+        The Avalara AvaTax value that can be passed to identify the customer type for tax purposes. The range of values can be A - R (more info at Avalara). Value is case-sensitive.
     exemption_certificate : str
         The tax exemption certificate number for the account. If the merchant has an integration for the Vertex tax provider, this optional value will be sent in any tax calculation requests for the account.
     external_accounts : :obj:`list` of :obj:`ExternalAccount`
@@ -203,6 +205,7 @@ class Account(Resource):
         "deleted_at": datetime,
         "dunning_campaign_id": str,
         "email": str,
+        "entity_use_code": str,
         "exemption_certificate": str,
         "external_accounts": ["ExternalAccount"],
         "first_name": str,

@@ -1320,7 +1320,7 @@ class ExternalSubscription(Resource):
     quantity : int
         An indication of the quantity of a subscribed item's quantity.
     state : str
-        External subscriptions can be active, canceled, expired, or past_due.
+        External subscriptions can be active, canceled, expired, past_due, voided, revoked, or paused.
     test : bool
         An indication of whether or not the external subscription was purchased in a sandbox environment.
     trial_ends_at : datetime

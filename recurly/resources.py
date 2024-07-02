@@ -1307,10 +1307,14 @@ class ExternalSubscription(Resource):
         When the external subscription expires in the external platform.
     external_id : str
         The id of the subscription in the external systems., I.e. Apple App Store or Google Play Store.
+    external_payment_phases : :obj:`list` of :obj:`ExternalPaymentPhase`
+        The phases of the external subscription payment lifecycle.
     external_product_reference : ExternalProductReferenceMini
         External Product Reference details
     id : str
         System-generated unique identifier for an external subscription ID, e.g. `e28zov4fw0v2`.
+    imported : bool
+        An indication of whether or not the external subscription was created by a historical data import.
     in_grace_period : bool
         An indication of whether or not the external subscription is in a grace period.
     last_purchased : datetime
@@ -1340,8 +1344,10 @@ class ExternalSubscription(Resource):
         "created_at": datetime,
         "expires_at": datetime,
         "external_id": str,
+        "external_payment_phases": ["ExternalPaymentPhase"],
         "external_product_reference": "ExternalProductReferenceMini",
         "id": str,
+        "imported": bool,
         "in_grace_period": bool,
         "last_purchased": datetime,
         "object": str,
@@ -1378,6 +1384,58 @@ class ExternalProductReferenceMini(Resource):
         "id": str,
         "object": str,
         "reference_code": str,
+        "updated_at": datetime,
+    }
+
+
+class ExternalPaymentPhase(Resource):
+    """
+    Attributes
+    ----------
+    amount : str
+        Allows up to 9 decimal places
+    created_at : datetime
+        When the external subscription was created in Recurly.
+    currency : str
+        3-letter ISO 4217 currency code.
+    ending_billing_period_index : int
+        Ending Billing Period Index
+    ends_at : datetime
+        Ends At
+    id : str
+        System-generated unique identifier for an external payment phase ID, e.g. `e28zov4fw0v2`.
+    object : str
+        Object type
+    offer_name : str
+        Name of the discount offer given, e.g. "introductory"
+    offer_type : str
+        Type of discount offer given, e.g. "FREE_TRIAL"
+    period_count : int
+        Number of billing periods
+    period_length : str
+        Billing cycle length
+    started_at : datetime
+        Started At
+    starting_billing_period_index : int
+        Starting Billing Period Index
+    updated_at : datetime
+        When the external subscription was updated in Recurly.
+    """
+
+    schema = {
+        "amount": str,
+        "created_at": datetime,
+        "currency": str,
+        "ending_billing_period_index": int,
+        "ends_at": datetime,
+        "id": str,
+        "object": str,
+        "offer_name": str,
+        "offer_type": str,
+        "period_count": int,
+        "period_length": str,
+        "started_at": datetime,
+        "starting_billing_period_index": int,
         "updated_at": datetime,
     }
 
@@ -1705,6 +1763,8 @@ class LineItem(Resource):
         The custom fields will only be altered when they are included in a request. Sending an empty array will not remove any existing values. To remove a field send the name with a null or empty value.
     description : str
         Description that appears on the invoice. For subscription related items this will be filled in automatically.
+    destination_tax_address_source : str
+        The source of the address that will be used as the destinaion in determining taxes. Available only when the site is on an Elite plan. A value of "destination" refers to the "Customer tax address". A value of "origin" refers to the "Business entity tax address".
     discount : float
         The discount applied to the line item.
     end_date : datetime
@@ -1727,12 +1787,22 @@ class LineItem(Resource):
         - "credits" refers to refund or proration credits. This portion of the invoice can be considered a credit memo.
         - "applied_credits" refers to previous credits applied to this invoice. See their original_line_item_id to determine where the credit first originated.
         - "carryforwards" can be ignored. They exist to consume any remaining credit balance. A new credit with the same amount will be created and placed back on the account.
+    liability_gl_account_code : str
+        Unique code to identify the ledger account. Each code must start
+        with a letter or number. The following special characters are
+        allowed: `-_.,:`
     object : str
         Object type
     origin : str
         A credit created from an original charge will have the value of the charge's origin.
+    origin_tax_address_source : str
+        The source of the address that will be used as the origin in determining taxes. Available only when the site is on an Elite plan. A value of "origin" refers to the "Business entity tax address". A value of "destination" refers to the "Customer tax address".
     original_line_item_invoice_id : str
         The invoice where the credit originated. Will only have a value if the line item is a credit created from a previous credit, or if the credit was created from a charge refund.
+    performance_obligation_id : str
+        The ID of a performance obligation. Performance obligations are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     plan_code : str
         If the line item is a charge or credit for a plan or add-on, this is the plan's code.
     plan_id : str
@@ -1753,6 +1823,10 @@ class LineItem(Resource):
         For refund charges, the quantity being refunded. For non-refund charges, the total quantity refunded (possibly over multiple refunds).
     refunded_quantity_decimal : str
         A floating-point alternative to Refunded Quantity. For refund charges, the quantity being refunded. For non-refund charges, the total quantity refunded (possibly over multiple refunds). The Decimal Quantity feature must be enabled to utilize this field.
+    revenue_gl_account_code : str
+        Unique code to identify the ledger account. Each code must start
+        with a letter or number. The following special characters are
+        allowed: `-_.,:`
     revenue_schedule_type : str
         Revenue schedule type
     shipping_address : ShippingAddress
@@ -1803,6 +1877,7 @@ class LineItem(Resource):
         "currency": str,
         "custom_fields": ["CustomField"],
         "description": str,
+        "destination_tax_address_source": str,
         "discount": float,
         "end_date": datetime,
         "external_sku": str,
@@ -1812,9 +1887,12 @@ class LineItem(Resource):
         "item_code": str,
         "item_id": str,
         "legacy_category": str,
+        "liability_gl_account_code": str,
         "object": str,
         "origin": str,
+        "origin_tax_address_source": str,
         "original_line_item_invoice_id": str,
+        "performance_obligation_id": str,
         "plan_code": str,
         "plan_id": str,
         "previous_line_item_id": str,
@@ -1825,6 +1903,7 @@ class LineItem(Resource):
         "refund": bool,
         "refunded_quantity": int,
         "refunded_quantity_decimal": str,
+        "revenue_gl_account_code": str,
         "revenue_schedule_type": str,
         "shipping_address": "ShippingAddress",
         "start_date": datetime,
@@ -2575,6 +2654,64 @@ class CustomFieldDefinition(Resource):
     }
 
 
+class GeneralLedgerAccount(Resource):
+    """
+    Attributes
+    ----------
+    account_type : str
+    code : str
+        Unique code to identify the ledger account. Each code must start
+        with a letter or number. The following special characters are
+        allowed: `-_.,:`
+    created_at : datetime
+        Created at
+    description : str
+        Optional description.
+    id : str
+        The ID of a general ledger account. General ledger accounts are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
+    object : str
+        Object type
+    updated_at : datetime
+        Last updated at
+    """
+
+    schema = {
+        "account_type": str,
+        "code": str,
+        "created_at": datetime,
+        "description": str,
+        "id": str,
+        "object": str,
+        "updated_at": datetime,
+    }
+
+
+class PerformanceObligation(Resource):
+    """
+    Attributes
+    ----------
+    created_at : datetime
+        Created At
+    id : str
+        The ID of a performance obligation. Performance obligations are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
+    name : str
+        Performance Obligation Name
+    updated_at : datetime
+        Last updated at
+    """
+
+    schema = {
+        "created_at": datetime,
+        "id": str,
+        "name": str,
+        "updated_at": datetime,
+    }
+
+
 class Item(Resource):
     """
     Attributes
@@ -2601,10 +2738,22 @@ class Item(Resource):
         Optional, stock keeping unit to link the item to other inventory systems.
     id : str
         Item ID
+    liability_gl_account_id : str
+        The ID of a general ledger account. General ledger accounts are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     name : str
         This name describes your item and will appear on the invoice when it's purchased on a one time basis.
     object : str
         Object type
+    performance_obligation_id : str
+        The ID of a performance obligation. Performance obligations are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
+    revenue_gl_account_id : str
+        The ID of a general ledger account. General ledger accounts are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     revenue_schedule_type : str
         Revenue schedule type
     state : str
@@ -2629,8 +2778,11 @@ class Item(Resource):
         "description": str,
         "external_sku": str,
         "id": str,
+        "liability_gl_account_id": str,
         "name": str,
         "object": str,
+        "performance_obligation_id": str,
+        "revenue_gl_account_id": str,
         "revenue_schedule_type": str,
         "state": str,
         "tax_code": str,
@@ -2972,6 +3124,10 @@ class AddOn(Resource):
         Add-on ID
     item : ItemMini
         Just the important parts.
+    liability_gl_account_id : str
+        The ID of a general ledger account. General ledger accounts are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     measured_unit_id : str
         System-generated unique identifier for an measured unit associated with the add-on.
     name : str
@@ -2982,8 +3138,16 @@ class AddOn(Resource):
         Whether the add-on is optional for the customer to include in their purchase on the hosted payment page. If false, the add-on will be included when a subscription is created through the Recurly UI. However, the add-on will not be included when a subscription is created through the API.
     percentage_tiers : :obj:`list` of :obj:`PercentageTiersByCurrency`
         This feature is currently in development and requires approval and enablement, please contact support.
+    performance_obligation_id : str
+        The ID of a performance obligation. Performance obligations are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     plan_id : str
         Plan ID
+    revenue_gl_account_id : str
+        The ID of a general ledger account. General ledger accounts are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     revenue_schedule_type : str
         When this add-on is invoiced, the line item will use this revenue schedule. If `item_code`/`item_id` is part of the request then `revenue_schedule_type` must be absent in the request as the value will be set from the item.
     state : str
@@ -3023,12 +3187,15 @@ class AddOn(Resource):
         "external_sku": str,
         "id": str,
         "item": "ItemMini",
+        "liability_gl_account_id": str,
         "measured_unit_id": str,
         "name": str,
         "object": str,
         "optional": bool,
         "percentage_tiers": ["PercentageTiersByCurrency"],
+        "performance_obligation_id": str,
         "plan_id": str,
+        "revenue_gl_account_id": str,
         "revenue_schedule_type": str,
         "state": str,
         "tax_code": str,
@@ -3151,10 +3318,22 @@ class ShippingMethod(Resource):
         Deleted at
     id : str
         Shipping Method ID
+    liability_gl_account_id : str
+        The ID of a general ledger account. General ledger accounts are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     name : str
         The name of the shipping method displayed to customers.
     object : str
         Object type
+    performance_obligation_id : str
+        The ID of a performance obligation. Performance obligations are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
+    revenue_gl_account_id : str
+        The ID of a general ledger account. General ledger accounts are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     tax_code : str
         Used by Avalara, Vertex, and Recurly’s built-in tax feature. The tax
         code values are specific to each tax system. If you are using Recurly’s
@@ -3177,8 +3356,11 @@ class ShippingMethod(Resource):
         "created_at": datetime,
         "deleted_at": datetime,
         "id": str,
+        "liability_gl_account_id": str,
         "name": str,
         "object": str,
+        "performance_obligation_id": str,
+        "revenue_gl_account_id": str,
         "tax_code": str,
         "updated_at": datetime,
     }
@@ -3441,61 +3623,6 @@ class InvoiceTemplate(Resource):
     }
 
 
-class ExternalPaymentPhase(Resource):
-    """
-    Attributes
-    ----------
-    amount : str
-        Allows up to 9 decimal places
-    created_at : datetime
-        When the external subscription was created in Recurly.
-    currency : str
-        3-letter ISO 4217 currency code.
-    ending_billing_period_index : int
-        Ending Billing Period Index
-    ends_at : datetime
-        Ends At
-    external_subscription : ExternalSubscription
-        Subscription from an external resource such as Apple App Store or Google Play Store.
-    id : str
-        System-generated unique identifier for an external payment phase ID, e.g. `e28zov4fw0v2`.
-    object : str
-        Object type
-    offer_name : str
-        Name of the discount offer given, e.g. "introductory"
-    offer_type : str
-        Type of discount offer given, e.g. "FREE_TRIAL"
-    period_count : int
-        Number of billing periods
-    period_length : str
-        Billing cycle length
-    started_at : datetime
-        Started At
-    starting_billing_period_index : int
-        Starting Billing Period Index
-    updated_at : datetime
-        When the external subscription was updated in Recurly.
-    """
-
-    schema = {
-        "amount": str,
-        "created_at": datetime,
-        "currency": str,
-        "ending_billing_period_index": int,
-        "ends_at": datetime,
-        "external_subscription": "ExternalSubscription",
-        "id": str,
-        "object": str,
-        "offer_name": str,
-        "offer_type": str,
-        "period_count": int,
-        "period_length": str,
-        "started_at": datetime,
-        "starting_billing_period_index": int,
-        "updated_at": datetime,
-    }
-
-
 class Entitlements(Resource):
     """
     Attributes
@@ -3590,10 +3717,20 @@ class BusinessEntity(Resource):
         The entity code of the business entity.
     created_at : datetime
         Created at
+    default_liability_gl_account_id : str
+        The ID of a general ledger account. General ledger accounts are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     default_registration_number : str
         Registration number for the customer used on the invoice.
+    default_revenue_gl_account_id : str
+        The ID of a general ledger account. General ledger accounts are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     default_vat_number : str
         VAT number for the customer used on the invoice.
+    destination_tax_address_source : str
+        The source of the address that will be used as the destinaion in determining taxes. Available only when the site is on an Elite plan. A value of "destination" refers to the "Customer tax address". A value of "origin" refers to the "Business entity tax address".
     id : str
         Business entity ID
     invoice_display_address : Address
@@ -3602,6 +3739,8 @@ class BusinessEntity(Resource):
         This name describes your business entity and will appear on the invoice.
     object : str
         Object type
+    origin_tax_address_source : str
+        The source of the address that will be used as the origin in determining taxes. Available only when the site is on an Elite plan. A value of "origin" refers to the "Business entity tax address". A value of "destination" refers to the "Customer tax address".
     subscriber_location_countries : :obj:`list` of :obj:`str`
         List of countries for which the business entity will be used.
     tax_address : Address
@@ -3613,12 +3752,16 @@ class BusinessEntity(Resource):
     schema = {
         "code": str,
         "created_at": datetime,
+        "default_liability_gl_account_id": str,
         "default_registration_number": str,
+        "default_revenue_gl_account_id": str,
         "default_vat_number": str,
+        "destination_tax_address_source": str,
         "id": str,
         "invoice_display_address": "Address",
         "name": str,
         "object": str,
+        "origin_tax_address_source": str,
         "subscriber_location_countries": list,
         "tax_address": "Address",
         "updated_at": datetime,
@@ -3645,8 +3788,16 @@ class GiftCard(Resource):
         The ID of the account that purchased the gift card.
     id : str
         Gift card ID
+    liability_gl_account_id : str
+        The ID of a general ledger account. General ledger accounts are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     object : str
         Object type
+    performance_obligation_id : str
+        The ID of a performance obligation. Performance obligations are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     product_code : str
         The product code or SKU of the gift card product.
     purchase_invoice_id : str
@@ -3659,6 +3810,10 @@ class GiftCard(Resource):
         The unique redemption code for the gift card, generated by Recurly. Will be 16 characters, alphanumeric, displayed uppercase, but accepted in any case at redemption. Used by the recipient account to create a credit in the amount of the `unit_amount` on their account.
     redemption_invoice_id : str
         The ID of the invoice for the gift card redemption made by the recipient.  Does not have a value until gift card is redeemed.
+    revenue_gl_account_id : str
+        The ID of a general ledger account. General ledger accounts are
+        only accessible as a part of the Recurly RevRec Standard and
+        Recurly RevRec Advanced features.
     unit_amount : float
         The amount of the gift card, which is the amount of the charge to the gifter account and the amount of credit that is applied to the recipient account upon successful redemption.
     updated_at : datetime
@@ -3674,13 +3829,16 @@ class GiftCard(Resource):
         "delivery": "GiftCardDelivery",
         "gifter_account_id": str,
         "id": str,
+        "liability_gl_account_id": str,
         "object": str,
+        "performance_obligation_id": str,
         "product_code": str,
         "purchase_invoice_id": str,
         "recipient_account_id": str,
         "redeemed_at": datetime,
         "redemption_code": str,
         "redemption_invoice_id": str,
+        "revenue_gl_account_id": str,
         "unit_amount": float,
         "updated_at": datetime,
     }

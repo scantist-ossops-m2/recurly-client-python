@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.10.15](https://github.com/recurly/recurly-client-python/tree/2.10.15) (2024-07-03)
+
+[Full Changelog](https://github.com/recurly/recurly-client-python/compare/2.10.14...2.10.15)
+
+
+**Merged Pull Requests**
+
+- V2 get external subscription by external [#697](https://github.com/recurly/recurly-client-python/pull/697) ([paulorbpinho-fullstacklabs](https://github.com/paulorbpinho-fullstacklabs))
+- add taxable address sources to business entity and adjustment [#696](https://github.com/recurly/recurly-client-python/pull/696) ([amandamfielding](https://github.com/amandamfielding))
+
+
+
 ## [2.10.14](https://github.com/recurly/recurly-client-python/tree/2.10.14) (2024-05-08)
 
 [Full Changelog](https://github.com/recurly/recurly-client-python/compare/2.10.13...2.10.14)

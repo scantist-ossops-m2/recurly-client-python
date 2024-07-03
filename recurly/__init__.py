@@ -2278,6 +2278,8 @@ class ExternalSubscription(Resource):
         'last_purchased',
         'auto_renew',
         'in_grace_period',
+        'imported',
+        'test',
         'app_identifier',
         'quantity',
         'state',
@@ -2295,6 +2297,14 @@ class ExternalSubscription(Resource):
       url = urljoin(self._url, '/external_payment_phases/{}'.format(external_payment_phase_uuid))
       resp, elem = ExternalPaymentPhase().element_for_url(url)
       return ExternalPaymentPhase().from_element(elem)
+
+    @classmethod
+    def get_by_external_id(cls, external_id):
+        """Return a `External Subscription` instance identified by
+        the given external id.
+
+        """
+        return cls.get("external-id-{}".format(external_id))
 
 class ExternalProductReference(Resource):
 

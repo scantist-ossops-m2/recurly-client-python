@@ -19,6 +19,8 @@ Content-Type: application/xml; charset=utf-8
         <last_purchased nil="nil"></last_purchased>
         <auto_renew type="boolean">false</auto_renew>
         <in_grace_period type="boolean">false</in_grace_period>
+        <imported type="boolean">false</imported>
+        <test type="boolean">false</test>
         <app_identifier nil="nil"></app_identifier>
         <quantity type="integer">1</quantity>
         <state>active</state>
@@ -39,6 +41,8 @@ Content-Type: application/xml; charset=utf-8
         <last_purchased nil="nil"></last_purchased>
         <auto_renew type="boolean">false</auto_renew>
         <in_grace_period type="boolean">false</in_grace_period>
+        <imported type="boolean">false</imported>
+        <test type="boolean">false</test>
         <app_identifier>app_identifier</app_identifier>
         <quantity type="integer">1</quantity>
         <state>active</state>

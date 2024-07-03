@@ -2020,12 +2020,176 @@ class Client(BaseClient):
         -------
 
         CustomFieldDefinition
-            An custom field definition.
+            A custom field definition.
         """
         path = self._interpolate_path(
             "/custom_field_definitions/%s", custom_field_definition_id
         )
         return self._make_request("GET", path, None, **options)
+
+    def create_general_ledger_account(self, body, **options):
+        """Create a new general ledger account
+
+        Parameters
+        ----------
+
+        body : dict
+            The request body. It should follow the schema of GeneralLedgerAccountCreate.
+
+        Keyword Arguments
+        -----------------
+
+        headers : dict
+            Extra HTTP headers to send with the request.
+
+        Returns
+        -------
+
+        GeneralLedgerAccount
+            A new general ledger account.
+        """
+        path = self._interpolate_path(
+            "/general_ledger_accounts",
+        )
+        return self._make_request("POST", path, body, **options)
+
+    def list_general_ledger_accounts(self, **options):
+        """List a site's general ledger accounts
+
+        Keyword Arguments
+        -----------------
+
+        headers : dict
+            Extra HTTP headers to send with the request.
+        params : dict
+            Query Parameters.
+        params.ids : :obj:`list` of :obj:`str`
+            Filter results by their IDs. Up to 200 IDs can be passed at once using
+            commas as separators, e.g. `ids=h1at4d57xlmy,gyqgg0d3v9n1,jrsm5b4yefg6`.
+
+            **Important notes:**
+
+            * The `ids` parameter cannot be used with any other ordering or filtering
+              parameters (`limit`, `order`, `sort`, `begin_time`, `end_time`, etc)
+            * Invalid or unknown IDs will be ignored, so you should check that the
+              results correspond to your request.
+            * Records are returned in an arbitrary order. Since results are all
+              returned at once you can sort the records yourself.
+        params.limit : int
+            Limit number of records 1-200.
+        params.order : str
+            Sort order.
+        params.sort : str
+            Sort field. You *really* only want to sort by `updated_at` in ascending
+            order. In descending order updated records will move behind the cursor and could
+            prevent some records from being returned.
+        params.account_type : str
+            General Ledger Account type by which to filter the response.
+
+        Returns
+        -------
+
+        Pager
+            A list of the site's general ledger accounts.
+        """
+        path = self._interpolate_path(
+            "/general_ledger_accounts",
+        )
+        return Pager(self, path, **options)
+
+    def get_general_ledger_account(self, general_ledger_account_id, **options):
+        """Fetch a general ledger account
+
+        Parameters
+        ----------
+
+        general_ledger_account_id : str
+            General Ledger Account ID
+
+        Keyword Arguments
+        -----------------
+
+        headers : dict
+            Extra HTTP headers to send with the request.
+
+        Returns
+        -------
+
+        GeneralLedgerAccount
+            A general ledger account.
+        """
+        path = self._interpolate_path(
+            "/general_ledger_accounts/%s", general_ledger_account_id
+        )
+        return self._make_request("GET", path, None, **options)
+
+    def update_general_ledger_account(self, general_ledger_account_id, body, **options):
+        """Update a general ledger account
+
+        Parameters
+        ----------
+
+        general_ledger_account_id : str
+            General Ledger Account ID
+        body : dict
+            The request body. It should follow the schema of GeneralLedgerAccountUpdate.
+
+        Keyword Arguments
+        -----------------
+
+        headers : dict
+            Extra HTTP headers to send with the request.
+
+        Returns
+        -------
+
+        GeneralLedgerAccount
+            The updated general ledger account.
+        """
+        path = self._interpolate_path(
+            "/general_ledger_accounts/%s", general_ledger_account_id
+        )
+        return self._make_request("PUT", path, body, **options)
+
+    def get_performance_obligation(self, performance_obligation_id, **options):
+        """Get a single Performance Obligation.
+
+        Parameters
+        ----------
+
+        performance_obligation_id : str
+            Performance Obligation id.
+
+        Keyword Arguments
+        -----------------
+
+        headers : dict
+            Extra HTTP headers to send with the request.
+
+        Returns
+        -------
+
+        PerformanceObligation
+            A single Performance Obligation.
+        """
+        path = self._interpolate_path(
+            "/performance_obligations/%s", performance_obligation_id
+        )
+        return self._make_request("GET", path, None, **options)
+
+    def get_performance_obligations(self, **options):
+        """Get a site's Performance Obligations
+
+        Returns
+        -------
+
+        Pager
+            A list of Performance Obligations.
+        """
+        path = self._interpolate_path(
+            "/performance_obligations",
+        )
+        return Pager(self, path, **options)
 
     def list_invoice_template_accounts(self, invoice_template_id, **options):
         """List an invoice template's associated accounts
@@ -2699,7 +2863,7 @@ class Client(BaseClient):
         ----------
 
         external_subscription_id : str
-            External subscription id
+            External subscription ID or external_id. For ID no prefix is used e.g. `e28zov4fw0v2`. For external_id use prefix `external-id-`, e.g. `external-id-123456`.
 
         Keyword Arguments
         -----------------
@@ -5170,7 +5334,7 @@ class Client(BaseClient):
     def get_external_subscription_external_payment_phase(
         self, external_subscription_id, external_payment_phase_id, **options
     ):
-        """Fetch an external payment_phase
+        """Fetch an external payment phase
 
         Parameters
         ----------
@@ -5190,7 +5354,7 @@ class Client(BaseClient):
         -------
 
         ExternalPaymentPhase
-            Details for an external payment_phase.
+            Details for an external payment phase.
         """
         path = self._interpolate_path(
             "/external_subscriptions/%s/external_payment_phases/%s",

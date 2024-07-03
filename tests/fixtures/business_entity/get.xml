@@ -32,6 +32,8 @@ Content-Type: application/xml; charset=utf-8
         <country>US</country>
         <phone>4344444222</phone>
     </tax_address>
+    <origin_tax_address_source>origin</origin_tax_address_source>
+    <destination_tax_address_source>destination</destination_tax_address_source>
     <subscriber_location_countries type="array">
         <subscriber_location_country>GB</subscriber_location_country>
         <subscriber_location_country>CA</subscriber_location_country>

@@ -1316,6 +1316,18 @@ class TestResources(RecurlyTest):
                 )
                 account.charge(charge)
 
+            """Test adjustment with taxable addresses"""
+            with self.mock_request('adjustment/charged-with-taxable-address-sources.xml'):
+                charge = Adjustment(
+                    unit_amount_in_cents=1000,
+                    currency='USD',
+                    description='test charge',
+                    type='charge',
+                    origin_tax_address_source='origin',
+                    destination_tax_address_source='destination',
+                )
+                account.charge(charge)
+
             with self.mock_request('adjustment/account-has-adjustments.xml'):
                 charges = account.adjustments()
 
@@ -3633,6 +3645,8 @@ class TestResources(RecurlyTest):
         self.assertEqual(entity.default_registration_number, 'ab1')
         self.assertEqual(entity.subscriber_location_countries, ['GB', 'CA'])
         self.assertIsInstance(entity.tax_address, Address)
+        self.assertEqual(entity.origin_tax_address_source, 'origin')
+        self.assertEqual(entity.destination_tax_address_source, 'destination')
         self.assertIsInstance(entity.invoice_display_address, Address)
         self.assertEqual(entity.created_at, datetime(2023, 5, 13, 17, 28, 47, tzinfo=entity.created_at.tzinfo))
         self.assertEqual(entity.updated_at, datetime(2023, 10, 13, 17, 28, 48, tzinfo=entity.updated_at.tzinfo))

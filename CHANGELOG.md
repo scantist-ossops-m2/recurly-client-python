@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.51.0](https://github.com/recurly/recurly-client-python/tree/4.51.0) (2024-07-03)
+
+[Full Changelog](https://github.com/recurly/recurly-client-python/compare/4.50.0...4.51.0)
+
+
+**Merged Pull Requests**
+
+- Generated Latest Changes for v2021-02-25 (Taxable Address Control, RevRec) [#698](https://github.com/recurly/recurly-client-python/pull/698) ([recurly-integrations](https://github.com/recurly-integrations))
+
+
+
 ## [4.50.0](https://github.com/recurly/recurly-client-python/tree/4.50.0) (2024-05-31)
 
 [Full Changelog](https://github.com/recurly/recurly-client-python/compare/4.49.0...4.50.0)
